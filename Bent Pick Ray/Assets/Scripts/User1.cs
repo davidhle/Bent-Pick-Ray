@@ -16,12 +16,14 @@ public class User1 : MonoBehaviour
     private GameObject scene = null;
     private XRController rightXRController;
     public Matrix4x4 selectedobjetMatrix;
+    private GameObject mainCamera;
 
     private bool gripButtonLF = false;
     public Matrix4x4 oPrime;
     private GameObject XRRig;
     private GameObject cameraOffset;
     private Matrix4x4 O, hC, XRR, S, CO, worldTransform;
+    private Vector3 lastControllerPosition;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +33,8 @@ public class User1 : MonoBehaviour
         selectables = GameObject.Find("Selectables");
         cameraOffset = GameObject.Find("Camera Offset");
         XRRig = GameObject.Find("XR Rig");
+        mainCamera = GameObject.Find("Main Camera");
+        lastControllerPosition = new Vector3(0,0,0);
 
         if (rightHandController != null) // guard
         {
@@ -58,6 +62,7 @@ public class User1 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Debug.Log(lastControllerPosition == rightHandController.transform.localPosition);
         if (Physics.Raycast(rightHandController.transform.position, rightHandController.transform.TransformDirection(Vector3.forward), out rightHit))
         {
             //Debug.Log("Did Hit");
@@ -80,6 +85,7 @@ public class User1 : MonoBehaviour
         }
 
         Dragging();
+        lastControllerPosition = rightHandController.transform.position;
     }
 
     private void Dragging()
@@ -107,7 +113,7 @@ public class User1 : MonoBehaviour
             }
         }
 
-        
+
         gripButtonLF = gripButtonRight;
     }
 
@@ -132,8 +138,11 @@ public class User1 : MonoBehaviour
     {
         AssignTransformationMatrices();
         selectedobjetMatrix = S.inverse * XRR * CO * hC * oPrime;
-
-        selectedObject.transform.localPosition = new Vector3(selectedobjetMatrix[0, 3], selectedobjetMatrix[1, 3], selectedobjetMatrix[2, 3]);
+        Debug.Log("s = " + ScalingFactor());
+        float s = ScalingFactor() * Time.deltaTime;
+        Debug.Log("after multiplying by Time.deltaTime: " + s);
+        Vector3 vProj = new Vector3(selectedobjetMatrix[0, 3], selectedobjetMatrix[1, 3], selectedobjetMatrix[2, 3]);
+        selectedObject.transform.localPosition = s * vProj + lastControllerPosition;
         selectedObject.transform.localRotation = selectedobjetMatrix.rotation;
     }
 
@@ -144,5 +153,15 @@ public class User1 : MonoBehaviour
         S = Matrix4x4.TRS(selectables.transform.localPosition, selectables.transform.localRotation, selectables.transform.localScale);
         CO = Matrix4x4.TRS(cameraOffset.transform.localPosition, cameraOffset.transform.localRotation, cameraOffset.transform.localScale);
         XRR = Matrix4x4.TRS(XRRig.transform.localPosition, XRRig.transform.localRotation, XRRig.transform.localScale);
+    }
+
+    private float ScalingFactor() {
+        float objDistanceToArm = Vector3.Distance(selectedObject.transform.position, rightHandController.transform.position);
+        float armLength = Vector3.Distance(rightHandController.transform.position, mainCamera.transform.position);
+        if (objDistanceToArm / armLength < 1) {
+          return 1.0f;
+        } else {
+          return objDistanceToArm / armLength;
+        }
     }
 }
