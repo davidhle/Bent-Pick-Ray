@@ -21,6 +21,7 @@ public class User2 : MonoBehaviour
     private GameObject XRRig;
     private GameObject cameraOffset;
     private Matrix4x4 O, hC, XRR, S, CO, worldTransform;
+    private Matrix4x4 hitPosition, hitPositionLocal;
 
     // Start is called before the first frame update
     void Start()
@@ -57,25 +58,34 @@ public class User2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Physics.Raycast(leftHandController.transform.position, leftHandController.transform.TransformDirection(Vector3.forward), out leftHit))
+        if (selectedObject == null)
         {
-            //Debug.Log("Did Hit");
-            // update ray visualization
-            leftRayRenderer.SetPosition(0, leftHandController.transform.position);
-            leftRayRenderer.SetPosition(1, leftHit.point);
+            if (Physics.Raycast(leftHandController.transform.position, leftHandController.transform.TransformDirection(Vector3.forward), out leftHit))
+            {
+                //Debug.Log("Did Hit");
+                // update ray visualization
+                leftRayRenderer.SetPosition(0, leftHandController.transform.position);
+                leftRayRenderer.SetPosition(1, leftHit.point);
 
-            // update intersection sphere visualization
-            leftRayIntersectionSphere.SetActive(true); // show
-            leftRayIntersectionSphere.transform.position = leftHit.point;
+                // update intersection sphere visualization
+                leftRayIntersectionSphere.SetActive(true); // show
+                leftRayIntersectionSphere.transform.position = leftHit.point;
+            }
+            else // ray does not intersect with objects
+            {
+                // update ray visualization
+                leftRayRenderer.SetPosition(0, leftHandController.transform.position);
+                leftRayRenderer.SetPosition(1, leftHandController.transform.position + leftHandController.transform.TransformDirection(Vector3.forward) * 1000);
+
+                // update intersection sphere visualization
+                leftRayIntersectionSphere.SetActive(false); // hide
+            }
         }
-        else // ray does not intersect with objects
+        else
         {
-            // update ray visualization
-            leftRayRenderer.SetPosition(0, leftHandController.transform.position);
-            leftRayRenderer.SetPosition(1, leftHandController.transform.position + leftHandController.transform.TransformDirection(Vector3.forward) * 1000);
-
-            // update intersection sphere visualization
-            leftRayIntersectionSphere.SetActive(false); // hide
+            Matrix4x4 finalPosM = selectedObject.transform.localToWorldMatrix * hitPositionLocal;
+            Vector3 finalPos = new Vector3(finalPosM[0, 3], finalPosM[1, 3], finalPosM[2, 3]);
+            DrawQuadraticBezierCurve(leftHandController.transform.position, leftHandController.transform.position + leftHandController.transform.TransformDirection(Vector3.forward) * 0.5f, finalPos);
         }
 
         Dragging();
@@ -113,10 +123,12 @@ public class User2 : MonoBehaviour
     private void SelectObject(GameObject go)
     {
         selectedObject = go;
+        hitPosition = Matrix4x4.TRS(leftHit.point, Quaternion.Euler(new Vector3(0, 0, 0)), new Vector3(0, 0, 0));
         // selectedObjectLeft.transform.SetParent(leftHandController.transform, false); // worldPositionStays = true
 
         AssignTransformationMatrices();
         oPrime = hC.inverse * CO.inverse * XRR.inverse * S * O;
+        hitPositionLocal = selectedObject.transform.localToWorldMatrix.inverse * hitPosition;
         // SetTransformByMatrix(selectedObject, oPrime);
     }
 
@@ -145,5 +157,23 @@ public class User2 : MonoBehaviour
         S = Matrix4x4.TRS(selectables.transform.localPosition, selectables.transform.localRotation, selectables.transform.localScale);
         CO = Matrix4x4.TRS(cameraOffset.transform.localPosition, cameraOffset.transform.localRotation, cameraOffset.transform.localScale);
         XRR = Matrix4x4.TRS(XRRig.transform.localPosition, XRRig.transform.localRotation, XRRig.transform.localScale);
+    }
+
+    void DrawQuadraticBezierCurve(Vector3 point0, Vector3 point1, Vector3 point2)
+    {
+        leftRayRenderer.positionCount = 200;
+        float t = 0f;
+        Vector3 B = new Vector3(0, 0, 0);
+        //Debug.Log(point0);
+        //Debug.Log(point1);
+        //Debug.Log(point2);
+        for (int i = 0; i < leftRayRenderer.positionCount; i++)
+        {
+            B = (1 - t) * (1 - t) * point0 + 2 * (1 - t) * t * point1 + t * t * point2;
+            leftRayRenderer.SetPosition(i, B);
+            t += (1 / (float)leftRayRenderer.positionCount);
+        }
+
+        leftRayIntersectionSphere.transform.position = point2;
     }
 }

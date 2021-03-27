@@ -84,8 +84,8 @@ public class BentPickRay : MonoBehaviour
         Quaternion r1 = m1.rotation;
         Quaternion r2 = m2.rotation;
         
-        Quaternion total = r1 * r2;
-        //Quaternion total = Quaternion.Slerp(r1, r2, 1/2f);
+        //Quaternion total = r1 * r2;
+        Quaternion total = Quaternion.Slerp(r1, r2, 1/2f);
         //Debug.Log("r1: " + r1);
         //Debug.Log("r2: " + r2);
         //Debug.Log("total: " + total);
@@ -108,14 +108,14 @@ public class BentPickRay : MonoBehaviour
     }
 
     private void BendRays(){
-        Vector3 v1 = translation - rightHandController.transform.position;
-        Vector3 v2 = t1 - rightHandController.transform.position;
-        float cosAlpha = Vector3.Dot(v1,v2)/ Vector3.magnitude(v1) * Vector3.magnitude(v2);
-        float alpha = acos(cosAlpha);
+        //Vector3 v1 = translation - rightHandController.transform.position;
+        //Vector3 v2 = t1 - rightHandController.transform.position;
+        //float cosAlpha = Vector3.Dot(v1,v2)/ Vector3.magnitude(v1) * Vector3.magnitude(v2);
+        //float alpha = acos(cosAlpha);
 
-        Vector3 a = (v2 * cosAlpha * Vector3.magnitude(v1))/ Vector3.magnitude(v2) - v1;
+        //Vector3 a = (v2 * cosAlpha * Vector3.magnitude(v1))/ Vector3.magnitude(v2) - v1;
 
-        Vector3 m = rightHandController.transform.position - ((Vector3.magnitude(v1)/2*cosAlpha(90-alpha)) * (a/Vector3.magnitude(a)));
+        //Vector3 m = rightHandController.transform.position - ((Vector3.magnitude(v1)/2*cosAlpha(90-alpha)) * (a/Vector3.magnitude(a)));
     }
     
 }
