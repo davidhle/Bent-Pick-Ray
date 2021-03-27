@@ -15,6 +15,7 @@ public class User2 : MonoBehaviour
     public GameObject selectedObject = null;
     private GameObject scene = null;
     private XRController leftXRController;
+    public Matrix4x4 selectedObjectMatrix;
 
     private bool gripButtonLF = false;
     public Matrix4x4 oPrime;
@@ -22,6 +23,8 @@ public class User2 : MonoBehaviour
     private GameObject cameraOffset;
     private Matrix4x4 O, hC, XRR, S, CO, worldTransform;
     private Matrix4x4 hitPosition, hitPositionLocal;
+    private Vector3 v1, v2, a, m;
+    private float alpha;
 
     // Start is called before the first frame update
     void Start()
@@ -60,6 +63,7 @@ public class User2 : MonoBehaviour
     {
         if (selectedObject == null)
         {
+            leftRayRenderer.positionCount = 2;
             if (Physics.Raycast(leftHandController.transform.position, leftHandController.transform.TransformDirection(Vector3.forward), out leftHit))
             {
                 //Debug.Log("Did Hit");
@@ -85,7 +89,10 @@ public class User2 : MonoBehaviour
         {
             Matrix4x4 finalPosM = selectedObject.transform.localToWorldMatrix * hitPositionLocal;
             Vector3 finalPos = new Vector3(finalPosM[0, 3], finalPosM[1, 3], finalPosM[2, 3]);
-            DrawQuadraticBezierCurve(leftHandController.transform.position, leftHandController.transform.position + leftHandController.transform.TransformDirection(Vector3.forward) * 0.5f, finalPos);
+            float r = Vector3.Distance(m, leftHandController.transform.position); // radius of circle that makes arc
+            Vector3 handle = leftHandController.transform.position + leftHandController.transform.forward * r; // radius + controller position in controller direction
+            // DrawQuadraticBezierCurve(leftHandController.transform.position, leftHandController.transform.position + leftHandController.transform.TransformDirection(Vector3.forward) * 0.5f, finalPos);
+            DrawQuadraticBezierCurve(leftHandController.transform.position, handle, finalPos);
         }
 
         Dragging();
@@ -116,7 +123,7 @@ public class User2 : MonoBehaviour
             }
         }
 
-        
+
         gripButtonLF = gripButtonLeft;
     }
 
@@ -144,10 +151,10 @@ public class User2 : MonoBehaviour
     public void UpdatePosition()
     {
         AssignTransformationMatrices();
-        Matrix4x4 selectedobjetMatrix = S.inverse * XRR * CO * hC * oPrime;
+        selectedObjectMatrix = S.inverse * XRR * CO * hC * oPrime;
 
-        selectedObject.transform.localPosition = new Vector3(selectedobjetMatrix[0, 3], selectedobjetMatrix[1, 3], selectedobjetMatrix[2, 3]);
-        selectedObject.transform.localRotation = selectedobjetMatrix.rotation;
+        selectedObject.transform.localPosition = new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]);
+        selectedObject.transform.localRotation = selectedObjectMatrix.rotation;
     }
 
     private void AssignTransformationMatrices()
@@ -159,14 +166,20 @@ public class User2 : MonoBehaviour
         XRR = Matrix4x4.TRS(XRRig.transform.localPosition, XRRig.transform.localRotation, XRRig.transform.localScale);
     }
 
+    private void BendRays()
+    {
+        v1 = (selectedObject.transform.position - leftHandController.transform.position).normalized;
+        v2 = new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]) - leftHandController.transform.position;
+        alpha = Vector3.Angle(v1, v2);
+        a = ((v2 * Mathf.Cos(alpha) * v1.magnitude)/ v2.magnitude) - v1;
+        m = leftHandController.transform.position - (v1.magnitude / (2 * Mathf.Cos(Mathf.PI/2 - alpha))) * a.normalized;
+    }
+
     void DrawQuadraticBezierCurve(Vector3 point0, Vector3 point1, Vector3 point2)
     {
         leftRayRenderer.positionCount = 200;
         float t = 0f;
         Vector3 B = new Vector3(0, 0, 0);
-        //Debug.Log(point0);
-        //Debug.Log(point1);
-        //Debug.Log(point2);
         for (int i = 0; i < leftRayRenderer.positionCount; i++)
         {
             B = (1 - t) * (1 - t) * point0 + 2 * (1 - t) * t * point1 + t * t * point2;
