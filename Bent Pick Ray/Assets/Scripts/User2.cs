@@ -21,6 +21,7 @@ public class User2 : MonoBehaviour
     private GameObject XRRig;
     private GameObject cameraOffset;
     private Matrix4x4 O, hC, XRR, S, CO, worldTransform;
+    public bool selecting;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +31,7 @@ public class User2 : MonoBehaviour
         selectables = GameObject.Find("Selectables");
         cameraOffset = GameObject.Find("Camera Offset");
         XRRig = GameObject.Find("XR Rig");
+        selecting = false;
 
         if (leftHandController != null) // guard
         {
@@ -106,13 +108,14 @@ public class User2 : MonoBehaviour
             }
         }
 
-        
+
         gripButtonLF = gripButtonLeft;
     }
 
     private void SelectObject(GameObject go)
     {
         selectedObject = go;
+        selecting = true;
         // selectedObjectLeft.transform.SetParent(leftHandController.transform, false); // worldPositionStays = true
 
         AssignTransformationMatrices();
@@ -126,16 +129,16 @@ public class User2 : MonoBehaviour
     {
         // selectedObjectLeft.transform.SetParent(selectables.transform, true); // worldPositionStays = true
         selectedObject = null;
-
+        selecting = false;
     }
 
     public void UpdatePosition()
     {
         AssignTransformationMatrices();
-        Matrix4x4 selectedobjetMatrix = S.inverse * XRR * CO * hC * oPrime;
+        Matrix4x4 selectedObjectMatrix = S.inverse * XRR * CO * hC * oPrime;
 
-        selectedObject.transform.localPosition = new Vector3(selectedobjetMatrix[0, 3], selectedobjetMatrix[1, 3], selectedobjetMatrix[2, 3]);
-        selectedObject.transform.localRotation = selectedobjetMatrix.rotation;
+        selectedObject.transform.localPosition = new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]);
+        selectedObject.transform.localRotation = selectedObjectMatrix.rotation;
     }
 
     private void AssignTransformationMatrices()
@@ -145,5 +148,22 @@ public class User2 : MonoBehaviour
         S = Matrix4x4.TRS(selectables.transform.localPosition, selectables.transform.localRotation, selectables.transform.localScale);
         CO = Matrix4x4.TRS(cameraOffset.transform.localPosition, cameraOffset.transform.localRotation, cameraOffset.transform.localScale);
         XRR = Matrix4x4.TRS(XRRig.transform.localPosition, XRRig.transform.localRotation, XRRig.transform.localScale);
+    }
+
+    public void DrawRaycast() {
+
+    }
+
+    public void DrawBentRay(Vector3 point0, Vector3 point1, Vector3 point2)
+    {
+        leftRayRenderer.positionCount = 200;
+        float t = 0f;
+        Vector3 B = new Vector3(0, 0, 0);
+        for (int i = 0; i < leftRayRenderer.positionCount; i++)
+        {
+            B = (1 - t) * (1 - t) * point0 + 2 * (1 - t) * t * point1 + t * t * point2;
+            leftRayRenderer.SetPosition(i, B);
+            t += (1 / (float)leftRayRenderer.positionCount);
+        }
     }
 }

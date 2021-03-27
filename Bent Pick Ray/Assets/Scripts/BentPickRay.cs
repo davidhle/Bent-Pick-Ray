@@ -17,7 +17,7 @@ public class BentPickRay : MonoBehaviour
 
     private bool gripButtonLFRight = false;
     private bool gripButtonLFLeft = false;
-    private Matrix4x4 oPrimeRight, oPrimeLeft;
+      private Matrix4x4 oPrimeRight, oPrimeLeft;
     private GameObject XRRig;
     private GameObject cameraOffset;
     private Matrix4x4 O, RHC,LHC, XRR, S, CO, worldTransform;
@@ -84,8 +84,8 @@ public class BentPickRay : MonoBehaviour
         Quaternion r1 = m1.rotation;
         Quaternion r2 = m2.rotation;
 
-        Quaternion total = r1 * r2;
-        //Quaternion total = Quaternion.Slerp(r1, r2, 1/2f);
+        //Quaternion total = r1 * r2;
+        Quaternion total = Quaternion.Slerp(r1, r2, 1/2f);
         //Debug.Log("r1: " + r1);
         //Debug.Log("r2: " + r2);
         //Debug.Log("total: " + total);
@@ -116,6 +116,7 @@ public class BentPickRay : MonoBehaviour
         // Vector3 a = (v2 * cosAlpha * Vector3.magnitude(v1))/ Vector3.magnitude(v2) - v1;
         //
         // Vector3 m = rightHandController.transform.position - ((Vector3.magnitude(v1)/2*cosAlpha(90-alpha)) * (a/Vector3.magnitude(a)));
+        user1.DrawBentRay(rightHandController.transform.position, (t1 - rightHandController.transform.position)/2, selectedObject.transform.position);
+        user2.DrawBentRay(leftHandController.transform.position, t2, selectedObject.transform.position);
     }
-
 }

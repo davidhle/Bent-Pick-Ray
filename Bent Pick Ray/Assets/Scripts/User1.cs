@@ -15,7 +15,7 @@ public class User1 : MonoBehaviour
     public GameObject selectedObject = null;
     private GameObject scene = null;
     private XRController rightXRController;
-    public Matrix4x4 selectedobjetMatrix;
+    public Matrix4x4 selectedObjectMatrix;
     private GameObject mainCamera;
 
     private bool gripButtonLF = false;
@@ -24,6 +24,8 @@ public class User1 : MonoBehaviour
     private GameObject cameraOffset;
     private Matrix4x4 O, hC, XRR, S, CO, worldTransform;
     private Vector3 lastControllerPosition;
+    public float s;
+    public bool selecting;
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +37,7 @@ public class User1 : MonoBehaviour
         XRRig = GameObject.Find("XR Rig");
         mainCamera = GameObject.Find("Main Camera");
         lastControllerPosition = new Vector3(0,0,0);
+        selecting = false;
 
         if (rightHandController != null) // guard
         {
@@ -120,30 +123,32 @@ public class User1 : MonoBehaviour
     private void SelectObject(GameObject go)
     {
         selectedObject = go;
+        selecting = true;
         // selectedObjectRight.transform.SetParent(rightHandController.transform, false); // worldPositionStays = true
 
         AssignTransformationMatrices();
         oPrime = hC.inverse * CO.inverse * XRR.inverse * S * O;
         // SetTransformByMatrix(selectedObject, oPrime);
+        s = ScalingFactor();
+        Debug.Log("s: " + s);
     }
 
     private void DeselectObject()
     {
         // selectedObjectRight.transform.SetParent(selectables.transform, true); // worldPositionStays = true
         selectedObject = null;
-
+        selecting = false;
     }
 
     public void UpdatePosition()
     {
         AssignTransformationMatrices();
-        selectedobjetMatrix = S.inverse * XRR * CO * hC * oPrime;
-        Debug.Log("s = " + ScalingFactor());
-        float s = ScalingFactor() * Time.deltaTime;
-        Debug.Log("after multiplying by Time.deltaTime: " + s);
-        Vector3 vProj = new Vector3(selectedobjetMatrix[0, 3], selectedobjetMatrix[1, 3], selectedobjetMatrix[2, 3]);
-        selectedObject.transform.localPosition = s * vProj + lastControllerPosition;
-        selectedObject.transform.localRotation = selectedobjetMatrix.rotation;
+        selectedObjectMatrix = S.inverse * XRR * CO * hC * oPrime;
+        Vector3 vProj = (new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]) - new Vector3(oPrime[0, 3], oPrime[1, 3], oPrime[2, 3]));
+        Vector3 z = new Vector3(oPrime[0, 3], oPrime[1, 3], oPrime[2, 3]) + (vProj * s);
+        Debug.Log(vProj);
+        selectedObject.transform.localPosition = new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]);
+        selectedObject.transform.localRotation = selectedObjectMatrix.rotation;
     }
 
     private void AssignTransformationMatrices()
@@ -156,12 +161,35 @@ public class User1 : MonoBehaviour
     }
 
     private float ScalingFactor() {
-        float objDistanceToArm = Vector3.Distance(selectedObject.transform.position, rightHandController.transform.position);
-        float armLength = Vector3.Distance(rightHandController.transform.position, mainCamera.transform.position);
-        if (objDistanceToArm / armLength < 1) {
+        float objDistanceToArm = selectedObject.transform.position.z - rightHandController.transform.position.z;
+        float armLength = rightHandController.transform.position.z - mainCamera.transform.position.z;
+        Debug.Log("objDistanceToArm: " + objDistanceToArm);
+        Debug.Log("armLength: " + armLength);
+
+        if (objDistanceToArm * armLength < 1) {
           return 1.0f;
         } else {
-          return objDistanceToArm / armLength;
+          return (objDistanceToArm * armLength);
+        }
+    }
+
+    public void DrawRaycast() {
+
+    }
+
+    public void DrawBentRay(Vector3 point0, Vector3 point1, Vector3 point2)
+    {
+        Debug.Log("point 0: " + point0);
+        Debug.Log("point 1: " + point1);
+        Debug.Log("point 2: " + point2);
+        rightRayRenderer.positionCount = 200;
+        float t = 0f;
+        Vector3 B = new Vector3(0, 0, 0);
+        for (int i = 0; i < rightRayRenderer.positionCount; i++)
+        {
+            B = (1 - t) * (1 - t) * point0 + 2 * (1 - t) * t * point1 + t * t * point2;
+            rightRayRenderer.SetPosition(i, B);
+            t += (1 / (float)rightRayRenderer.positionCount);
         }
     }
 }
