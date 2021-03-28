@@ -25,6 +25,7 @@ public class User2 : MonoBehaviour
     private Matrix4x4 hitPosition, hitPositionLocal;
     private Vector3 v1, v2, a, m;
     private float alpha;
+    private bool bending;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +35,7 @@ public class User2 : MonoBehaviour
         selectables = GameObject.Find("Selectables");
         cameraOffset = GameObject.Find("Camera Offset");
         XRRig = GameObject.Find("XR Rig");
+        bending = false;
 
         if (leftHandController != null) // guard
         {
@@ -87,6 +89,10 @@ public class User2 : MonoBehaviour
         }
         else
         {
+            if (!bending) {
+                BendRays();
+                bending = true;
+            }
             Matrix4x4 finalPosM = selectedObject.transform.localToWorldMatrix * hitPositionLocal;
             Vector3 finalPos = new Vector3(finalPosM[0, 3], finalPosM[1, 3], finalPosM[2, 3]);
             float r = Vector3.Distance(m, leftHandController.transform.position); // radius of circle that makes arc
@@ -145,7 +151,9 @@ public class User2 : MonoBehaviour
     {
         // selectedObjectLeft.transform.SetParent(selectables.transform, true); // worldPositionStays = true
         selectedObject = null;
-
+        if (bending) {
+          bending = false;
+        }
     }
 
     public void UpdatePosition()
