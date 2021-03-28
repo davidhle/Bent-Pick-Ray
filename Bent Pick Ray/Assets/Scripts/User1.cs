@@ -16,6 +16,7 @@ public class User1 : MonoBehaviour
     private GameObject scene = null;
     private XRController rightXRController;
     public Matrix4x4 selectedObjectMatrix;
+    private GameObject mainCamera;
 
     private bool gripButtonLF = false;
     public Matrix4x4 oPrime;
@@ -26,6 +27,7 @@ public class User1 : MonoBehaviour
     private Vector3 v1, v2, a, m;
     private float alpha;
     private bool bending;
+    private float s;
 
     // Start is called before the first frame update
     void Start()
@@ -36,6 +38,7 @@ public class User1 : MonoBehaviour
         cameraOffset = GameObject.Find("Camera Offset");
         XRRig = GameObject.Find("XR Rig");
         bending = false;
+        mainCamera = GameObject.Find("Main Camera");
 
         if (rightHandController != null) // guard
         {
@@ -140,10 +143,12 @@ public class User1 : MonoBehaviour
         selectedObject = go;
         hitPosition = Matrix4x4.TRS(rightHit.point, Quaternion.Euler(new Vector3(0, 0, 0)), new Vector3(0, 0, 0));
         // selectedObjectRight.transform.SetParent(rightHandController.transform, false); // worldPositionStays = true
-
         AssignTransformationMatrices();
         oPrime = hC.inverse * CO.inverse * XRR.inverse * S * O;
         hitPositionLocal = selectedObject.transform.localToWorldMatrix.inverse * hitPosition;
+        if (!bending) {
+          s = ScalingFactor();
+        }
         // SetTransformByMatrix(selectedObject, oPrime);
     }
 
@@ -160,8 +165,15 @@ public class User1 : MonoBehaviour
     {
         AssignTransformationMatrices();
         selectedObjectMatrix = S.inverse * XRR * CO * hC * oPrime;
+        Vector3 pos = new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]);
+        Vector3 scaledPos = pos + (rightHandController.transform.position - pos).normalized * s;
 
-        selectedObject.transform.localPosition = new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]);
+        if (s == 1) {
+          selectedObject.transform.localPosition = pos;
+        } else {
+          selectedObject.transform.localPosition = scaledPos;
+        }
+
         selectedObject.transform.localRotation = selectedObjectMatrix.rotation;
     }
 
@@ -196,5 +208,15 @@ public class User1 : MonoBehaviour
         }
 
         rightRayIntersectionSphere.transform.position = point2;
+    }
+
+    private float ScalingFactor() {
+        float objDistanceToArm = Vector3.Distance(selectedObject.transform.position, rightHandController.transform.position);
+        float armLength = Vector3.Distance(rightHandController.transform.position, mainCamera.transform.position);
+        if (objDistanceToArm * armLength < 1) {
+          return 1.0f;
+        } else {
+          return (objDistanceToArm * armLength);
+        }
     }
 }
