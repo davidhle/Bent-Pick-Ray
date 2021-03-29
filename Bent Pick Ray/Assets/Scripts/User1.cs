@@ -26,6 +26,10 @@ public class User1 : MonoBehaviour
     private Vector3 v1, v2, a, m;
     private float alpha;
     private bool bending;
+    public Vector3 possitionDiff;
+    public Vector3 rotationDiff;
+    public Vector3 lastRotation;
+
 
     // Start is called before the first frame update
     void Start()
@@ -138,6 +142,9 @@ public class User1 : MonoBehaviour
     private void SelectObject(GameObject go)
     {
         selectedObject = go;
+        possitionDiff = new Vector3(0,0,0);
+        rotationDiff = new Vector3(0,0,0);
+        lastRotation = new Vector3(0,0,0);
         hitPosition = Matrix4x4.TRS(rightHit.point, Quaternion.Euler(new Vector3(0, 0, 0)), new Vector3(0, 0, 0));
         // selectedObjectRight.transform.SetParent(rightHandController.transform, false); // worldPositionStays = true
 
@@ -160,9 +167,184 @@ public class User1 : MonoBehaviour
     {
         AssignTransformationMatrices();
         selectedObjectMatrix = S.inverse * XRR * CO * hC * oPrime;
+        Vector3 translation = new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]);
+        
+        if(possitionDiff.x > 0){
+            if(translation.x - selectedObject.transform.localPosition.x > possitionDiff.x){
+                translation.x = translation.x - possitionDiff.x;
+            }
+            else{
+                possitionDiff.x = translation.x - selectedObject.transform.localPosition.x;
+                translation.x = selectedObject.transform.localPosition.x;
+            }
+        }
+        if(possitionDiff.x < 0){
+            if(translation.x - selectedObject.transform.localPosition.x < possitionDiff.x){
+                translation.x = translation.x - possitionDiff.x;
+            }
+            else{
+                possitionDiff.x = translation.x - selectedObject.transform.localPosition.x;
+                translation.x = selectedObject.transform.localPosition.x;
+            }
+        }
+        
+        if(possitionDiff.y > 0){
+            if(translation.y - selectedObject.transform.localPosition.y > possitionDiff.y){
+                translation.y = translation.y - possitionDiff.y;
+            }
+            else{
+                possitionDiff.y = translation.y - selectedObject.transform.localPosition.y;
+                translation.y = selectedObject.transform.localPosition.y;
+            }
+        }
+        else{
+            if(translation.y - selectedObject.transform.localPosition.y < possitionDiff.y){
+                translation.y = translation.y - possitionDiff.y;
+            }
+            else{
+                possitionDiff.y = translation.y - selectedObject.transform.localPosition.y;
+                translation.y = selectedObject.transform.localPosition.y;
+            }
+        }
+        
+        if(possitionDiff.z > 0){
+            if(translation.z - selectedObject.transform.localPosition.z > possitionDiff.z){
+                translation.z = translation.z - possitionDiff.z;
+            }
+            else{
+                possitionDiff.z = translation.z - selectedObject.transform.localPosition.z;
+                translation.z = selectedObject.transform.localPosition.z;
+            }
+        }
+        else{
+            if(translation.z - selectedObject.transform.localPosition.z < possitionDiff.z){
+                translation.z = translation.z - possitionDiff.z;
+            }
+            else{
+                possitionDiff.z = translation.z - selectedObject.transform.localPosition.z;
+                translation.z = selectedObject.transform.localPosition.z;
+            }
+        }
+        selectedObject.transform.localPosition = translation;
 
-        selectedObject.transform.localPosition = new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]);
-        selectedObject.transform.localRotation = selectedObjectMatrix.rotation;
+        Vector3 rotationVector = selectedObjectMatrix.rotation.eulerAngles;
+
+        // get x rotation 
+        if (rotationDiff.x < 0) rotationDiff.x += 360;
+        if (lastRotation.x < 0) lastRotation.x += 360;
+        if (rotationVector.x < 0) rotationVector.x += 360;
+
+        float left = (360 - lastRotation.x) + rotationDiff.x;
+        float right = lastRotation.x - rotationDiff.x;
+
+        if (lastRotation.x < rotationDiff.x)
+        {
+            if (rotationDiff.x > 0)
+            {
+                left = rotationDiff.x - lastRotation.x;
+                right = (360 - rotationDiff.x) + lastRotation.x;
+            }
+            else
+            {
+                left = (360 - rotationDiff.x) + lastRotation.x;
+                right = rotationDiff.x - lastRotation.x;
+            }
+        }
+
+        float shortest = ((left <= right) ? left : (right * -1));
+        Vector3 currentRotation = rotationVector - lastRotation;
+
+        if ((currentRotation.x > 0 && shortest > 0) || (currentRotation.x < 0 && shortest < 0))
+        {
+            lastRotation.x += currentRotation.x;
+            rotationVector.x = rotationDiff.x;
+        }
+        else
+        {
+            rotationDiff.x += currentRotation.x;
+            lastRotation.x += currentRotation.x;
+            rotationVector.x = rotationDiff.x;
+        }
+
+        //get y rotation 
+        if (rotationDiff.y < 0) rotationDiff.y += 360;
+        if (lastRotation.y < 0) lastRotation.y += 360;
+        if (rotationVector.y < 0) rotationVector.y += 360;
+
+        left = (360 - lastRotation.y) + rotationDiff.y;
+        right = lastRotation.y - rotationDiff.y;
+
+        if (lastRotation.y < rotationDiff.y)
+        {
+            if (rotationDiff.y > 0)
+            {
+                left = rotationDiff.y - lastRotation.y;
+                right = (360 - rotationDiff.y) + lastRotation.y;
+            }
+            else
+            {
+                left = (360 - rotationDiff.y) + lastRotation.y;
+                right = rotationDiff.y - lastRotation.y;
+            }
+        }
+
+        shortest = ((left <= right) ? left : (right * -1));
+        currentRotation = rotationVector - lastRotation;
+
+        if ((currentRotation.y > 0 && shortest > 0) || (currentRotation.y < 0 && shortest < 0))
+        {
+            lastRotation.y += currentRotation.y;
+            rotationVector.y = rotationDiff.y;
+        }
+        else
+        {
+            rotationDiff.y += currentRotation.y;
+            lastRotation.y += currentRotation.y;
+            rotationVector.y = rotationDiff.y;
+        }
+
+        //get z rotation
+        if (rotationDiff.z < 0) rotationDiff.z += 360;
+        if (lastRotation.z < 0) lastRotation.z += 360;
+        if (rotationVector.z < 0) rotationVector.z += 360;
+
+        left = (360 - lastRotation.z) + rotationDiff.z;
+        right = lastRotation.z - rotationDiff.z;
+
+        if (lastRotation.z < rotationDiff.z)
+        {
+            if (rotationDiff.z > 0)
+            {
+                left = rotationDiff.z - lastRotation.z;
+                right = (360 - rotationDiff.z) + lastRotation.z;
+            }
+            else
+            {
+                left = (360 - rotationDiff.z) + lastRotation.z;
+                right = rotationDiff.z - lastRotation.z;
+            }
+        }
+
+        shortest = ((left <= right) ? left : (right * -1));
+        currentRotation = rotationVector - lastRotation;
+
+        if ((currentRotation.z > 0 && shortest > 0) || (currentRotation.z < 0 && shortest < 0))
+        {
+            lastRotation.z += currentRotation.z;
+            rotationVector.z = rotationDiff.z;
+        }
+        else
+        {
+            rotationDiff.z += currentRotation.z;
+            lastRotation.z += currentRotation.z;
+            rotationVector.z = rotationDiff.z;
+        }
+
+        //get final rotation
+        Quaternion rotation = Quaternion.Euler(rotationVector);
+        //Debug.Log(selectedObjectMatrix.rotation);
+        
+        selectedObject.transform.localRotation = rotation;
     }
 
     private void AssignTransformationMatrices()

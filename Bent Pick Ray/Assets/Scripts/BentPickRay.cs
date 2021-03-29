@@ -80,6 +80,8 @@ public class BentPickRay : MonoBehaviour
         t1 = new Vector3(m1[0, 3], m1[1, 3], m1[2, 3]);
         t2 = new Vector3(m2[0, 3], m2[1, 3], m2[2, 3]);
         translation  = (t1 + t2)/2;
+
+        user1.possitionDiff = t1 - translation;
         
         Quaternion r1 = m1.rotation;
         Quaternion r2 = m2.rotation;
@@ -90,6 +92,9 @@ public class BentPickRay : MonoBehaviour
         //Debug.Log("r2: " + r2);
         //Debug.Log("total: " + total);
         //Debug.Log("r1 * r2: " + r1 * r2);
+
+        user1.rotationDiff = total.eulerAngles;
+        user1.lastRotation = r1.eulerAngles;
 
         selectedObject.transform.localPosition = translation;
         selectedObject.transform.localRotation = total;
