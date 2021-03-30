@@ -77,8 +77,8 @@ public class BentPickRay : MonoBehaviour
         // Debug.Log(user1.selectedobjetMatrix);
         // Debug.Log(m1);
 
-        t1 = new Vector3(m1[0, 3], m1[1, 3], m1[2, 3]);
-        t2 = new Vector3(m2[0, 3], m2[1, 3], m2[2, 3]);
+        t1 = user1.GrabScaling(new Vector3(m1[0, 3], m1[1, 3], m1[2, 3]));
+        t2 = user2.GrabScaling(new Vector3(m2[0, 3], m2[1, 3], m2[2, 3]));
         translation  = (t1 + t2)/2;
         
         Quaternion r1 = m1.rotation;

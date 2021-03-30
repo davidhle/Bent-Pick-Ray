@@ -28,6 +28,7 @@ public class User1 : MonoBehaviour
     private float alpha;
     private bool bending;
     private float s;
+    float armLength;
 
     // Start is called before the first frame update
     void Start()
@@ -146,9 +147,8 @@ public class User1 : MonoBehaviour
         AssignTransformationMatrices();
         oPrime = hC.inverse * CO.inverse * XRR.inverse * S * O;
         hitPositionLocal = selectedObject.transform.localToWorldMatrix.inverse * hitPosition;
-        if (!bending) {
-          s = ScalingFactor();
-        }
+        s = ScalingFactor();
+        
         // SetTransformByMatrix(selectedObject, oPrime);
     }
 
@@ -166,13 +166,7 @@ public class User1 : MonoBehaviour
         AssignTransformationMatrices();
         selectedObjectMatrix = S.inverse * XRR * CO * hC * oPrime;
         Vector3 pos = new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]);
-        Vector3 scaledPos = pos + (rightHandController.transform.position - pos).normalized * s;
-
-        if (s == 1) {
-          selectedObject.transform.localPosition = pos;
-        } else {
-          selectedObject.transform.localPosition = scaledPos;
-        }
+        selectedObject.transform.localPosition = GrabScaling(pos);
 
         selectedObject.transform.localRotation = selectedObjectMatrix.rotation;
     }
@@ -211,12 +205,24 @@ public class User1 : MonoBehaviour
     }
 
     private float ScalingFactor() {
-        float objDistanceToArm = Vector3.Distance(selectedObject.transform.position, rightHandController.transform.position);
-        float armLength = Vector3.Distance(rightHandController.transform.position, mainCamera.transform.position);
-        if (objDistanceToArm * armLength < 1) {
-          return 1.0f;
-        } else {
-          return (objDistanceToArm * armLength);
+        float objDistanceToArm = Vector3.Distance(rightHit.point, rightHandController.transform.position);
+        armLength = Vector3.Distance(rightHandController.transform.position, mainCamera.transform.position);
+        if (objDistanceToArm / armLength < 1)
+        {
+            return 0f;
         }
+        else
+        {
+            return (objDistanceToArm / armLength);
+        }
+    }
+
+    public Vector3 GrabScaling(Vector3 pos)
+    {
+        float currentArmLength = Vector3.Distance(rightHandController.transform.position, mainCamera.transform.position);
+        float armchange = currentArmLength - armLength;
+        float fScale = s * armchange;
+        Vector3 fscaleDir = fScale * rightHandController.transform.TransformDirection(Vector3.forward);
+        return (pos + fscaleDir);
     }
 }
