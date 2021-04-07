@@ -33,6 +33,7 @@ public class User2 : MonoBehaviour
     public Vector3 lastRotation;
     private float s;
     float armLength;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -43,6 +44,7 @@ public class User2 : MonoBehaviour
         XRRig = GameObject.Find("XR Rig");
         bending = false;
         mainCamera = GameObject.Find("Main Camera");
+
 
         if (leftHandController != null) // guard
         {
@@ -136,8 +138,6 @@ public class User2 : MonoBehaviour
                 }
             }
         }
-
-
         gripButtonLF = gripButtonLeft;
     }
 
@@ -154,7 +154,6 @@ public class User2 : MonoBehaviour
         oPrime = hC.inverse * CO.inverse * XRR.inverse * S * O;
         hitPositionLocal = selectedObject.transform.localToWorldMatrix.inverse * hitPosition;
         s = ScalingFactor();
-
         // SetTransformByMatrix(selectedObject, oPrime);
     }
 

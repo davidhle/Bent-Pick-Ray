@@ -65,7 +65,6 @@ public class BentPickRay : MonoBehaviour
                 user1.UpdatePosition();
             }
         }
-
     }
 
     private void UpdatePosition(){
@@ -105,7 +104,7 @@ public class BentPickRay : MonoBehaviour
         
         BendRays();
     }
-
+    
     private void AssignTransformationMatrices()
     {
         O = Matrix4x4.TRS(selectedObject.transform.localPosition, selectedObject.transform.localRotation, selectedObject.transform.localScale);

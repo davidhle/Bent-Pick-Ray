@@ -33,7 +33,6 @@ public class User1 : MonoBehaviour
     private float s;
     float armLength;
 
-
     // Start is called before the first frame update
     void Start()
     {
@@ -138,8 +137,6 @@ public class User1 : MonoBehaviour
                 }
             }
         }
-
-
         gripButtonLF = gripButtonRight;
     }
 
@@ -155,7 +152,6 @@ public class User1 : MonoBehaviour
         oPrime = hC.inverse * CO.inverse * XRR.inverse * S * O;
         hitPositionLocal = selectedObject.transform.localToWorldMatrix.inverse * hitPosition;
         s = ScalingFactor();
-
         // SetTransformByMatrix(selectedObject, oPrime);
     }
 
@@ -361,7 +357,7 @@ public class User1 : MonoBehaviour
         CO = Matrix4x4.TRS(cameraOffset.transform.localPosition, cameraOffset.transform.localRotation, cameraOffset.transform.localScale);
         XRR = Matrix4x4.TRS(XRRig.transform.localPosition, XRRig.transform.localRotation, XRRig.transform.localScale);
     }
-
+    
     private void BendRays()
     {
         v1 = (rightHit.point - rightHandController.transform.position).normalized;
