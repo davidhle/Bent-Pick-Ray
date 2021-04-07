@@ -104,8 +104,9 @@ public class User2 : MonoBehaviour
             Vector3 finalPos = new Vector3(finalPosM[0, 3], finalPosM[1, 3], finalPosM[2, 3]);
             float r = Vector3.Distance(m, leftHandController.transform.position); // radius of circle that makes arc
             Vector3 handle = leftHandController.transform.position + leftHandController.transform.forward * r; // radius + controller position in controller direction
-            // DrawQuadraticBezierCurve(leftHandController.transform.position, leftHandController.transform.position + leftHandController.transform.TransformDirection(Vector3.forward) * 0.5f, finalPos);
-            DrawQuadraticBezierCurve(leftHandController.transform.position, handle, finalPos);
+            Debug.Log("left r: " + r);
+            DrawQuadraticBezierCurve(leftHandController.transform.position, leftHandController.transform.position + leftHandController.transform.TransformDirection(Vector3.forward) * 0.5f, finalPos);
+            // DrawQuadraticBezierCurve(leftHandController.transform.position, handle, finalPos);
         }
 
         Dragging();
@@ -153,7 +154,7 @@ public class User2 : MonoBehaviour
         oPrime = hC.inverse * CO.inverse * XRR.inverse * S * O;
         hitPositionLocal = selectedObject.transform.localToWorldMatrix.inverse * hitPosition;
         s = ScalingFactor();
-        
+
         // SetTransformByMatrix(selectedObject, oPrime);
     }
 
@@ -253,7 +254,7 @@ public class User2 : MonoBehaviour
 
         Vector3 rotationVector = selectedObjectMatrix.rotation.eulerAngles;
 
-        // get x rotation 
+        // get x rotation
         if (rotationDiff.x < 0) rotationDiff.x += 360;
         if (lastRotation.x < 0) lastRotation.x += 360;
         if (rotationVector.x < 0) rotationVector.x += 360;
@@ -290,7 +291,7 @@ public class User2 : MonoBehaviour
             rotationVector.x = rotationDiff.x;
         }
 
-        //get y rotation 
+        //get y rotation
         if (rotationDiff.y < 0) rotationDiff.y += 360;
         if (lastRotation.y < 0) lastRotation.y += 360;
         if (rotationVector.y < 0) rotationVector.y += 360;

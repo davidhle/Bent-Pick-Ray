@@ -105,10 +105,10 @@ public class User1 : MonoBehaviour
             Matrix4x4 finalPosM = selectedObject.transform.localToWorldMatrix * hitPositionLocal;
             Vector3 finalPos = new Vector3(finalPosM[0, 3], finalPosM[1, 3], finalPosM[2, 3]);
             float r = Vector3.Distance(m, rightHandController.transform.position); // radius of circle that makes arc
-            // Debug.Log("m: " + m);
-            Vector3 handle = rightHandController.transform.position + rightHandController.transform.forward * r; // radius + controller position in controller direction
-            // DrawQuadraticBezierCurve(rightHandController.transform.position, rightHandController.transform.position + rightHandController.transform.TransformDirection(Vector3.forward)* 0.5f, finalPos);
-            DrawQuadraticBezierCurve(rightHandController.transform.position, handle, finalPos);
+            Debug.Log("right r: " + r);
+            Vector3 handle = rightHandController.transform.position + rightHandController.transform.TransformDirection(Vector3.forward) * r; // radius + controller position in controller direction
+            DrawQuadraticBezierCurve(rightHandController.transform.position, rightHandController.transform.position + rightHandController.transform.TransformDirection(Vector3.forward)* 0.5f, finalPos);
+            // DrawQuadraticBezierCurve(rightHandController.transform.position, handle, finalPos);
         }
         // Debug.Log("bending: " + bending);
         Dragging();
@@ -155,7 +155,7 @@ public class User1 : MonoBehaviour
         oPrime = hC.inverse * CO.inverse * XRR.inverse * S * O;
         hitPositionLocal = selectedObject.transform.localToWorldMatrix.inverse * hitPosition;
         s = ScalingFactor();
-        
+
         // SetTransformByMatrix(selectedObject, oPrime);
     }
 
@@ -174,7 +174,7 @@ public class User1 : MonoBehaviour
         selectedObjectMatrix = S.inverse * XRR * CO * hC * oPrime;
         Vector3 pos = new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]);
         Vector3 translation = GrabScaling(pos);
-        
+
         if(possitionDiff.x > 0){
             if(translation.x - selectedObject.transform.localPosition.x > possitionDiff.x){
                 translation.x = translation.x - possitionDiff.x;
@@ -193,7 +193,7 @@ public class User1 : MonoBehaviour
                 translation.x = selectedObject.transform.localPosition.x;
             }
         }
-        
+
         if(possitionDiff.y > 0){
             if(translation.y - selectedObject.transform.localPosition.y > possitionDiff.y){
                 translation.y = translation.y - possitionDiff.y;
@@ -212,7 +212,7 @@ public class User1 : MonoBehaviour
                 translation.y = selectedObject.transform.localPosition.y;
             }
         }
-        
+
         if(possitionDiff.z > 0){
             if(translation.z - selectedObject.transform.localPosition.z > possitionDiff.z){
                 translation.z = translation.z - possitionDiff.z;
@@ -235,7 +235,7 @@ public class User1 : MonoBehaviour
 
         Vector3 rotationVector = selectedObjectMatrix.rotation.eulerAngles;
 
-        // get x rotation 
+        // get x rotation
         if (rotationDiff.x < 0) rotationDiff.x += 360;
         if (lastRotation.x < 0) lastRotation.x += 360;
         if (rotationVector.x < 0) rotationVector.x += 360;
@@ -272,7 +272,7 @@ public class User1 : MonoBehaviour
             rotationVector.x = rotationDiff.x;
         }
 
-        //get y rotation 
+        //get y rotation
         if (rotationDiff.y < 0) rotationDiff.y += 360;
         if (lastRotation.y < 0) lastRotation.y += 360;
         if (rotationVector.y < 0) rotationVector.y += 360;
@@ -349,7 +349,7 @@ public class User1 : MonoBehaviour
         //get final rotation
         Quaternion rotation = Quaternion.Euler(rotationVector);
         //Debug.Log(selectedObjectMatrix.rotation);
-        
+
         selectedObject.transform.localRotation = rotation;
     }
 
@@ -364,8 +364,8 @@ public class User1 : MonoBehaviour
 
     private void BendRays()
     {
-        v1 = (selectedObject.transform.position - rightHandController.transform.position).normalized;
-        v2 = new Vector3(selectedObjectMatrix[0, 3], selectedObjectMatrix[1, 3], selectedObjectMatrix[2, 3]) - rightHandController.transform.position;
+        v1 = (rightHit.point - rightHandController.transform.position).normalized;
+        v2 = rightHandController.transform.forward.normalized;
         alpha = Vector3.Angle(v1, v2);
         a = ((v2 * Mathf.Cos(alpha) * v1.magnitude)/ v2.magnitude) - v1;
         m = rightHandController.transform.position - (v1.magnitude / (2 * Mathf.Cos(Mathf.PI/2 - alpha))) * a.normalized;
