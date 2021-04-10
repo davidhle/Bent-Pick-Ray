@@ -104,7 +104,7 @@ public class User1 : MonoBehaviour
             Matrix4x4 finalPosM = selectedObject.transform.localToWorldMatrix * hitPositionLocal;
             Vector3 finalPos = new Vector3(finalPosM[0, 3], finalPosM[1, 3], finalPosM[2, 3]);
             float r = Vector3.Distance(m, rightHandController.transform.position); // radius of circle that makes arc
-            Debug.Log("right r: " + r);
+            //Debug.Log("right r: " + r);
             Vector3 handle = rightHandController.transform.position + rightHandController.transform.TransformDirection(Vector3.forward) * r; // radius + controller position in controller direction
             DrawQuadraticBezierCurve(rightHandController.transform.position, rightHandController.transform.position + rightHandController.transform.TransformDirection(Vector3.forward)* 0.5f, finalPos);
             // DrawQuadraticBezierCurve(rightHandController.transform.position, handle, finalPos);

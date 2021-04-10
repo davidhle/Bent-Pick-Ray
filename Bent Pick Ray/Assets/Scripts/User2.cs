@@ -106,7 +106,7 @@ public class User2 : MonoBehaviour
             Vector3 finalPos = new Vector3(finalPosM[0, 3], finalPosM[1, 3], finalPosM[2, 3]);
             float r = Vector3.Distance(m, leftHandController.transform.position); // radius of circle that makes arc
             Vector3 handle = leftHandController.transform.position + leftHandController.transform.forward * r; // radius + controller position in controller direction
-            Debug.Log("left r: " + r);
+            //Debug.Log("left r: " + r);
             DrawQuadraticBezierCurve(leftHandController.transform.position, leftHandController.transform.position + leftHandController.transform.TransformDirection(Vector3.forward) * 0.5f, finalPos);
             // DrawQuadraticBezierCurve(leftHandController.transform.position, handle, finalPos);
         }
