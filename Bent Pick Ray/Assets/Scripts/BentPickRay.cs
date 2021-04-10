@@ -91,18 +91,19 @@ public class BentPickRay : MonoBehaviour
         float w1 = 0.5f;
         float w2 = 0.5f;
 
-        if(l1 > l2){
-            //w1 = 0.25f*(((l1-l2)/l2)+0.5f);
-            w1 = (1/ (l1+l2)) * l1;
-            w2 = 1f - w1;
+        if (l1 > l2) {
+            // w1 = 0.25f * (((l1 - l2) / l2) + 0.5f);
+            w1 = (l1 / (l1 + l2));
+            // w2 = 1f - w1;
         }
-        else{
-            //w1 = 0.25f*(((l2-l1)/l1)+0.5f);
-            w1 = (1/ (l1+l2)) * l1;
-            w2 = 1f - w1;
+        else {
+            // w1 = 0.25f * (((l2 - l1) / l1) + 0.5f);
+            w1 = (l1 / (l1 + l2));
+            // w2 = 1f - w11
         }
-        Debug.Log(w1);
-        Debug.Log(w2);
+        w2 = 1f - w1;
+        Debug.Log("w1: " + w1);
+        Debug.Log("w2: " + w2);
 
         Vector3 t1Scaled = (t1-originalPosition)*w1;
         Vector3 t2Scaled = (t2-originalPosition)*w2;
@@ -112,7 +113,7 @@ public class BentPickRay : MonoBehaviour
 
         user1.possitionDiff = t1 - translation;
         user2.possitionDiff = t2 - translation;
-        
+
         Quaternion r1 = m1.rotation;
         Quaternion r2 = m2.rotation;
 
@@ -131,10 +132,10 @@ public class BentPickRay : MonoBehaviour
 
         selectedObject.transform.localPosition = translation;
         selectedObject.transform.localRotation = total;
-        
+
         BendRays();
     }
-    
+
     private void AssignTransformationMatrices()
     {
         O = Matrix4x4.TRS(selectedObject.transform.localPosition, selectedObject.transform.localRotation, selectedObject.transform.localScale);
@@ -155,5 +156,5 @@ public class BentPickRay : MonoBehaviour
 
         //Vector3 m = rightHandController.transform.position - ((Vector3.magnitude(v1)/2*cosAlpha(90-alpha)) * (a/Vector3.magnitude(a)));
     }
-    
+
 }

@@ -103,13 +103,14 @@ public class User1 : MonoBehaviour
             }
             Matrix4x4 finalPosM = selectedObject.transform.localToWorldMatrix * hitPositionLocal;
             Vector3 finalPos = new Vector3(finalPosM[0, 3], finalPosM[1, 3], finalPosM[2, 3]);
+            Vector3 startPos = rightHandController.transform.position;
+            float distance = Vector3.Distance(startPos, finalPos) / 2;
             float r = Vector3.Distance(m, rightHandController.transform.position); // radius of circle that makes arc
-            //Debug.Log("right r: " + r);
-            Vector3 handle = rightHandController.transform.position + rightHandController.transform.TransformDirection(Vector3.forward) * r; // radius + controller position in controller direction
-            DrawQuadraticBezierCurve(rightHandController.transform.position, rightHandController.transform.position + rightHandController.transform.TransformDirection(Vector3.forward)* 0.5f, finalPos);
-            // DrawQuadraticBezierCurve(rightHandController.transform.position, handle, finalPos);
+            Vector3 handle = startPos + rightHandController.transform.forward * r / 2; // radius + controller position in controller direction
+
+            DrawQuadraticBezierCurve(startPos, rightHandController.transform.position + rightHandController.transform.TransformDirection(Vector3.forward) * distance, finalPos);
+            // DrawQuadraticBezierCurve(startPos, handle, finalPos);
         }
-        // Debug.Log("bending: " + bending);
         Dragging();
     }
 
@@ -357,7 +358,7 @@ public class User1 : MonoBehaviour
         CO = Matrix4x4.TRS(cameraOffset.transform.localPosition, cameraOffset.transform.localRotation, cameraOffset.transform.localScale);
         XRR = Matrix4x4.TRS(XRRig.transform.localPosition, XRRig.transform.localRotation, XRRig.transform.localScale);
     }
-    
+
     private void BendRays()
     {
         v1 = (rightHit.point - rightHandController.transform.position).normalized;
