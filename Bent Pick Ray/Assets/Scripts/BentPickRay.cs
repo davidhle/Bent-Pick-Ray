@@ -91,16 +91,13 @@ public class BentPickRay : MonoBehaviour
         float w1 = 0.5f;
         float w2 = 0.5f;
 
-        if (l1 > l2) {
-            // w1 = 0.25f * (((l1 - l2) / l2) + 0.5f);
-            w1 = (l1 / (l1 + l2));
-            // w2 = 1f - w1;
-        }
-        else {
-            // w1 = 0.25f * (((l2 - l1) / l1) + 0.5f);
-            w1 = (l1 / (l1 + l2));
-            // w2 = 1f - w11
-        }
+        // if (l1 > l2) {
+        //     // w1 = 0.25f * (((l1 - l2) / l2) + 0.5f);
+        // }
+        // else {
+        //     // w1 = 0.25f * (((l2 - l1) / l1) + 0.5f);
+        // }
+        w1 = (l1 / (l1 + l2));
         w2 = 1f - w1;
         Debug.Log("w1: " + w1);
         Debug.Log("w2: " + w2);
@@ -116,13 +113,7 @@ public class BentPickRay : MonoBehaviour
 
         Quaternion r1 = m1.rotation;
         Quaternion r2 = m2.rotation;
-
-        //Quaternion total = r1 * r2;
         Quaternion total = Quaternion.Slerp(r1, r2, 1/2f);
-        //Debug.Log("r1: " + r1);
-        //Debug.Log("r2: " + r2);
-        //Debug.Log("total: " + total);
-        //Debug.Log("r1 * r2: " + r1 * r2);
 
         user1.rotationDiff = total.eulerAngles;
         user1.lastRotation = r1.eulerAngles;
@@ -132,8 +123,6 @@ public class BentPickRay : MonoBehaviour
 
         selectedObject.transform.localPosition = translation;
         selectedObject.transform.localRotation = total;
-
-        BendRays();
     }
 
     private void AssignTransformationMatrices()
@@ -144,17 +133,6 @@ public class BentPickRay : MonoBehaviour
         S = Matrix4x4.TRS(selectables.transform.localPosition, selectables.transform.localRotation, selectables.transform.localScale);
         CO = Matrix4x4.TRS(cameraOffset.transform.localPosition, cameraOffset.transform.localRotation, cameraOffset.transform.localScale);
         XRR = Matrix4x4.TRS(XRRig.transform.localPosition, XRRig.transform.localRotation, XRRig.transform.localScale);
-    }
-
-    private void BendRays(){
-        //Vector3 v1 = translation - rightHandController.transform.position;
-        //Vector3 v2 = t1 - rightHandController.transform.position;
-        //float cosAlpha = Vector3.Dot(v1,v2)/ Vector3.magnitude(v1) * Vector3.magnitude(v2);
-        //float alpha = acos(cosAlpha);
-
-        //Vector3 a = (v2 * cosAlpha * Vector3.magnitude(v1))/ Vector3.magnitude(v2) - v1;
-
-        //Vector3 m = rightHandController.transform.position - ((Vector3.magnitude(v1)/2*cosAlpha(90-alpha)) * (a/Vector3.magnitude(a)));
     }
 
 }
