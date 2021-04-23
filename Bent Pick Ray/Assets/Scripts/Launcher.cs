@@ -21,9 +21,17 @@ namespace Omar.Launcher
         /// This client's version number. Users are separated from each other by gameVersion (which allows you to make breaking changes).
         /// </summary>
         string gameVersion = "1";
+
         [Tooltip("The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created")]
         [SerializeField]
         private byte maxPlayersPerRoom = 4;
+
+        [Tooltip("The Ui Panel to let the user enter name, connect and play")]
+        [SerializeField]
+        private GameObject controlPanel;
+        [Tooltip("The UI Label to inform the user that the connection is in progress")]
+        [SerializeField]
+        private GameObject progressLabel;
 
 
         #endregion
@@ -50,6 +58,10 @@ namespace Omar.Launcher
         {
             //don't connect at the start, we now connect after clicking on the play button
             //Connect();
+
+            //show the control panel and hide the connection text
+            progressLabel.SetActive(false);
+            controlPanel.SetActive(true);
         }
 
 
@@ -66,6 +78,10 @@ namespace Omar.Launcher
         /// </summary>
         public void Connect()
         {
+            //hide the control button and show the connection text
+            progressLabel.SetActive(true);
+            controlPanel.SetActive(false);
+            
             // we check if we are connected or not, we join if we are , else we initiate the connection to the server.
             if (PhotonNetwork.IsConnected)
             {
@@ -89,6 +105,10 @@ namespace Omar.Launcher
 
         public override void OnDisconnected(DisconnectCause cause)
         {
+            //show the control panel and hide the connection text
+            progressLabel.SetActive(false);
+            controlPanel.SetActive(true);
+            
             Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
         }
 
