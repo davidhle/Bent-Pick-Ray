@@ -33,6 +33,8 @@ namespace Omar.Launcher
         [SerializeField]
         private GameObject progressLabel;
 
+        bool isConnecting;
+
 
         #endregion
 
@@ -91,7 +93,7 @@ namespace Omar.Launcher
             else
             {
                 // #Critical, we must first and foremost connect to Photon Online Server.
-                PhotonNetwork.ConnectUsingSettings();
+                isConnecting = PhotonNetwork.ConnectUsingSettings();
                 PhotonNetwork.GameVersion = gameVersion;
             }
         }
@@ -99,7 +101,11 @@ namespace Omar.Launcher
         public override void OnConnectedToMaster()
         {
             Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
-            PhotonNetwork.JoinRandomRoom();
+            if (isConnecting)
+            {
+                PhotonNetwork.JoinRandomRoom();
+                isConnecting = false;
+            }
         }
 
 
@@ -108,6 +114,7 @@ namespace Omar.Launcher
             //show the control panel and hide the connection text
             progressLabel.SetActive(false);
             controlPanel.SetActive(true);
+            isConnecting = false;
             
             Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
         }
@@ -122,7 +129,15 @@ namespace Omar.Launcher
 
         public override void OnJoinedRoom()
         {
-            Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+            {
+                Debug.Log("We load the 'Room for 1' ");
+
+
+                // #Critical
+                // Load the Room Level.
+                PhotonNetwork.LoadLevel("BentPickRayScene");
+            }
         }
 
 
