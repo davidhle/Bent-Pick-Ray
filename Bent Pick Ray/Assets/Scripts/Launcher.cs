@@ -48,7 +48,8 @@ namespace Omar.Launcher
         /// </summary>
         void Start()
         {
-            Connect();
+            //don't connect at the start, we now connect after clicking on the play button
+            //Connect();
         }
 
 
