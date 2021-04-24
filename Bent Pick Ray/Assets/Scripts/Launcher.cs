@@ -129,15 +129,16 @@ namespace Omar.Launcher
 
         public override void OnJoinedRoom()
         {
-            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
-            {
-                Debug.Log("We load the 'Room for 1' ");
+            // if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+            // {
+            //     Debug.Log("We load the 'Room for 1' ");
 
 
-                // #Critical
-                // Load the Room Level.
-                PhotonNetwork.LoadLevel("BentPickRayScene");
-            }
+            //     // #Critical
+            //     // Load the Room Level.
+            //     PhotonNetwork.LoadLevel("Room for 1");
+            // }
+            PhotonNetwork.LoadLevel("Room for 1");
         }
 
 
