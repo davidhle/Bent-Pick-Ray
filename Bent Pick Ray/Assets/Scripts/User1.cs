@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 
+using Photon.Pun;
+using Photon.Realtime;
+
 public class User1 : MonoBehaviour
 {
     private GameObject rightHandController;
@@ -40,7 +43,7 @@ public class User1 : MonoBehaviour
         scene = GameObject.Find("Scene");
         selectables = GameObject.Find("Selectables");
         cameraOffset = GameObject.Find("Camera Offset");
-        XRRig = GameObject.Find("XR Rig");
+        XRRig = this.gameObject;
         bending = false;
         mainCamera = GameObject.Find("Main Camera");
 
@@ -125,7 +128,8 @@ public class User1 : MonoBehaviour
         {
             if (gripButtonRight) // up (false->true)
             {
-                if (rightHit.collider != null && selectedObject == null && rightHit.collider.gameObject.transform.parent.gameObject == selectables)
+                Debug.Log(rightHit.collider.gameObject.transform.parent.gameObject.name);
+                if (rightHit.collider != null && selectedObject == null)
                 {
                     SelectObject(rightHit.collider.gameObject);
                 }
@@ -354,7 +358,7 @@ public class User1 : MonoBehaviour
     {
         O = Matrix4x4.TRS(selectedObject.transform.localPosition, selectedObject.transform.localRotation, selectedObject.transform.localScale);
         hC = Matrix4x4.TRS(rightHandController.transform.localPosition, rightHandController.transform.localRotation, rightHandController.transform.localScale);
-        S = Matrix4x4.TRS(selectables.transform.localPosition, selectables.transform.localRotation, selectables.transform.localScale);
+        S = Matrix4x4.TRS(selectedObject.transform.parent.gameObject.transform.localPosition, selectedObject.transform.parent.gameObject.transform.localRotation, selectedObject.transform.parent.gameObject.transform.localScale);
         CO = Matrix4x4.TRS(cameraOffset.transform.localPosition, cameraOffset.transform.localRotation, cameraOffset.transform.localScale);
         XRR = Matrix4x4.TRS(XRRig.transform.localPosition, XRRig.transform.localRotation, XRRig.transform.localScale);
     }
