@@ -130,7 +130,7 @@ public class User2 : MonoBehaviour
         {
             if (gripButtonLeft) // up (false->true)
             {
-                if (leftHit.collider != null && selectedObject == null)
+                if (leftHit.collider != null && selectedObject == null && leftHit.collider.gameObject.transform.parent.gameObject == selectables)
                 {
                     SelectObject(leftHit.collider.gameObject);
                 }
@@ -380,7 +380,7 @@ public class User2 : MonoBehaviour
     {
         O = Matrix4x4.TRS(selectedObject.transform.localPosition, selectedObject.transform.localRotation, selectedObject.transform.localScale);
         hC = Matrix4x4.TRS(leftHandController.transform.localPosition, leftHandController.transform.localRotation, leftHandController.transform.localScale);
-        S = S = Matrix4x4.TRS(selectedObject.transform.parent.gameObject.transform.localPosition, selectedObject.transform.parent.gameObject.transform.localRotation, selectedObject.transform.parent.gameObject.transform.localScale);
+        S = Matrix4x4.TRS(selectables.transform.localPosition, selectables.transform.localRotation, selectables.transform.localScale);
         CO = Matrix4x4.TRS(cameraOffset.transform.localPosition, cameraOffset.transform.localRotation, cameraOffset.transform.localScale);
         XRR = Matrix4x4.TRS(XRRig.transform.localPosition, XRRig.transform.localRotation, XRRig.transform.localScale);
     }
