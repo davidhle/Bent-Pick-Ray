@@ -9,8 +9,8 @@ using Photon.Realtime;
 
 public class BentPickRay : MonoBehaviour
 {
-    private GameObject rightHandController;
-    private GameObject leftHandController;
+    public GameObject rightHandController;
+    public GameObject leftHandController;
     private GameObject selectables;
     private GameObject scene = null;
     private XRController rightXRController;

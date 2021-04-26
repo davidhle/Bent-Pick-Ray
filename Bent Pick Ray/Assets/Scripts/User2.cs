@@ -10,7 +10,7 @@ using Photon.Realtime;
 
 public class User2 : MonoBehaviour
 {
-    private GameObject leftHandController;
+    public GameObject leftHandController;
     private LineRenderer leftRayRenderer;
     private GameObject leftRayIntersectionSphere;
     private GameObject selectables;
