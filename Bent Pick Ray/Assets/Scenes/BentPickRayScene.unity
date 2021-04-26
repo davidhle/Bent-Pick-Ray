@@ -384,7 +384,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 23d25b2e2d4364dd4b92c52ef40cd36e, type: 3}
---- !u!1001 &1633651234
+--- !u!1001 &1617406320
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -439,7 +439,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Rig
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2380679500116156350, guid: 33a8afff977b68c44ad3515dc8f5a905, type: 3}
+    - {fileID: 5647004058492051596, guid: 33a8afff977b68c44ad3515dc8f5a905, type: 3}
+    - {fileID: 7465157201124705107, guid: 33a8afff977b68c44ad3515dc8f5a905, type: 3}
+    - {fileID: 8278123436525284138, guid: 33a8afff977b68c44ad3515dc8f5a905, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 33a8afff977b68c44ad3515dc8f5a905, type: 3}
 --- !u!1001 &502557166246431056
 PrefabInstance:
@@ -556,7 +560,7 @@ PrefabInstance:
     - target: {fileID: 5492390920749737226, guid: 24e191e69fe4f4b478b1f277c88bcb6d, type: 3}
       propertyPath: playerPrefab
       value: 
-      objectReference: {fileID: 5799699931632416538, guid: 33a8afff977b68c44ad3515dc8f5a905, type: 3}
+      objectReference: {fileID: 1012759183664541470, guid: 0e1efd32011a7904599f3a79ae2c5be8, type: 3}
     - target: {fileID: 6558220677118283159, guid: 24e191e69fe4f4b478b1f277c88bcb6d, type: 3}
       propertyPath: m_RootOrder
       value: 2
