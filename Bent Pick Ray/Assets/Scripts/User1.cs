@@ -156,6 +156,7 @@ public class User1 : MonoBehaviour
         oPrime = hC.inverse * CO.inverse * XRR.inverse * S * O;
         hitPositionLocal = selectedObject.transform.localToWorldMatrix.inverse * hitPosition;
         s = ScalingFactor();
+        go.GetComponent<PhotonView>().RequestOwnership();
         // SetTransformByMatrix(selectedObject, oPrime);
     }
 

@@ -20,19 +20,35 @@ public class PlayerAvatar : MonoBehaviourPun
     void Update()
     {
         if(this.photonView.IsMine){
-            rightHand.SetActive(false);
-            leftHand.SetActive(false);
-            MapPosition(leftHand, XRNode.LeftHand);
-            MapPosition(rightHand, XRNode.RightHand);
+            // rightHand.SetActive(false);
+            // leftHand.SetActive(false);
+            MapPosition(leftHand, GameObject.Find("LeftHand Controller"));
+            MapPosition(rightHand, GameObject.Find("RightHand Controller"));
         }
     }
 
-    void MapPosition(GameObject target, XRNode node){
+    void MapPosition(GameObject target, GameObject XRnode){
 
-        InputDevices.GetDeviceAtXRNode(node).TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 position);
-        InputDevices.GetDeviceAtXRNode(node).TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rotation);
+        // InputDevices.GetDeviceAtXRNode(node).TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 position);
+        // InputDevices.GetDeviceAtXRNode(node).TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rotation);
 
-        target.transform.position = position;
-        target.transform.rotation = rotation;
+        target.transform.position = XRnode.transform.position;
+        target.transform.rotation = XRnode.transform.rotation;
     }
+
+    // public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    // {
+    //     if (stream.IsWriting)
+    //     {
+    //         stream.SendNext(rightHand.transform.position);
+    //         stream.SendNext(leftHand.transform.position);
+    //     }
+    //     else
+    //     {
+    //         rightHand.transform.position = (Vector3)stream.ReceiveNext();
+
+    //         leftHand.transform.position = (Vector3)stream.ReceiveNext();
+
+    //     }
+    // }
 }
