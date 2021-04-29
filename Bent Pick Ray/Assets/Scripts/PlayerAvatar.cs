@@ -20,8 +20,8 @@ public class PlayerAvatar : MonoBehaviourPun
     void Update()
     {
         if(this.photonView.IsMine){
-            // rightHand.SetActive(false);
-            // leftHand.SetActive(false);
+            rightHand.SetActive(false);
+            leftHand.SetActive(false);
             MapPosition(leftHand, GameObject.Find("LeftHand Controller"));
             MapPosition(rightHand, GameObject.Find("RightHand Controller"));
         }
